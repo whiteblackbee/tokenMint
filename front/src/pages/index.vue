@@ -87,20 +87,18 @@ export default {
     }
   },
   created: function () {
-    Token.init((networkID) => {
+    Token.init().then(networkID => {
+      console.log('networkID:', networkID)
       this.notice = '正在使用网络' + {
         1: '主网络',
         3: 'Ropsten 测试网络',
         42: 'kovan 测试网络',
         4: 'Rinkeby 测试网络'
       }[networkID] || '私有网络'
-    }).then(res => {
-      console.log(res)
-      if (res === -2) {
-        this.initPage = false
-      } else {
-        this.initPage = true
-      }
+      this.initPage = true
+    }).catch(err => {
+      console.err(err)
+      this.initPage = false
     })
   },
   methods: {
@@ -109,10 +107,22 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.btnDisabled = true
-          Token.deploy(this.form.initialSupply, this.form.tokenName, this.form.tokenSymbol, this.form.decimals, this.form.tokenSend || 0).then(res => {
-            this.btnDisabled = false
-          })
-          console.log('submit!!', this.form.initialSupply)
+          this.notice = '支付完 gas 费用后，需要三到五分钟时间等待，请耐心等待……'
+          Token.deploy(this.form.initialSupply, this.form.tokenName, this.form.tokenSymbol, this.form.decimals, this.form.tokenSend || 0)
+            .then(networkID => {
+              this.notice = '正在使用网络' + {
+                1: '主网络',
+                3: 'Ropsten 测试网络',
+                42: 'kovan 测试网络',
+                4: 'Rinkeby 测试网络'
+              }[networkID] || '私有网络'
+              this.btnDisabled = true
+            })
+            .then(err => {
+              console.err(err)
+              this.btnDisabled = false
+            })
+          console.log('submit!!')
         } else {
           console.log('error submit!!')
           return false

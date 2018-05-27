@@ -127,7 +127,6 @@ contract MyToken is StandardToken {
   string public  symbol;
   uint8 public  decimals;
   uint256 public buyPrice;
-  uint256 public debug;
   address public owner = msg.sender;
   constructor(
       uint256 initialSupply,
@@ -143,12 +142,10 @@ contract MyToken is StandardToken {
     buyPrice = tokenbuyPrice;
   }
   function _transfer(address _from, address _to, uint _value) internal {
-    //uint _allowance = allowed[_from][msg.sender];
     require(_to != address(0));
-    //require (_value <= _allowance);
+    require (_value <= balances[_from]);
     balances[_from] = balances[_from].sub(_value);
     balances[_to] = balances[_to].add(_value);
-    //allowed[_from][msg.sender] = _allowance.sub(_value);
     emit Transfer(_from, _to, _value);
   }
       //注意,这些交易函数会消耗相应的以太币,目前,接受以太币的函数需要增加 payable 关键字
@@ -156,11 +153,6 @@ contract MyToken is StandardToken {
      * 使用以太币购买代币
      */
     function () payable public {
-        if(debug == 0 ){
-            debug = 100;
-        } else{
-            debug = debug.add(debug);
-        }
       _transfer(owner, msg.sender, buyPrice * 10 ** uint256(decimals));
     }
 
