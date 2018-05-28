@@ -97,7 +97,7 @@ export default {
       }[networkID] || '私有网络'
       this.initPage = true
     }).catch(err => {
-      console.err(err)
+      console.error(err)
       this.initPage = false
     })
   },
@@ -118,8 +118,8 @@ export default {
               }[networkID] || '私有网络'
               this.btnDisabled = true
             })
-            .then(err => {
-              console.err(err)
+            .catch(err => {
+              console.error(err)
               this.btnDisabled = false
             })
           console.log('submit!!')

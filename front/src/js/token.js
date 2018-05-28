@@ -2,6 +2,7 @@ import tokenContractJson from '../../../build/contracts/MyToken.json'
 import Web3 from 'web3'
 import { MessageBox } from 'element-ui'
 
+let _timeOut = null
 const Token = {
   tokenContract: null,
   instance: null,
@@ -15,6 +16,11 @@ const Token = {
         console.log('Injected web3 detected.')
       } else {
         console.log('window.web3 cat not be found')
+        MessageBox({
+          type: 'alert',
+          title: '缺少浏览器插件',
+          message: '缺少 MetaMask 浏览器插件，请到 https://metamask.io/ 安装并登入账号后，刷新本页面继续'
+        })
         reject(new Error('缺少 MetaMask 浏览器插件，请到 https://metamask.io/ 安装并登入账号后，刷新本页面继续'))
       }
       self.web3.net.getListening(function (e, connected) {
@@ -22,8 +28,8 @@ const Token = {
         if (connected === false) {
           MessageBox({
             type: 'alert',
-            title: '缺少浏览器插件',
-            message: '缺少 MetaMask 浏览器插件，请到 https://metamask.io/ 安装并登入账号后，刷新本页面继续'
+            title: 'MetaMask 错误',
+            message: 'MetaMask 未连接 ，请检查'
           })
           reject(new Error('MetaMask 未连接 ，请检查'))
         }
@@ -44,16 +50,23 @@ const Token = {
   // 部署的方法
   deploy: function (initialSupply, tokenName, tokenSymbol, decimals, tokenbuyPrice) {
     let self = this
-    let timeOut = true
     console.log(initialSupply, tokenName, tokenSymbol, decimals, tokenbuyPrice)
-    setTimeout(() => {
-      if (timeOut === true) {
-        MessageBox({
-          type: 'alert',
-          title: '超时',
-          message: '部署合约超时，但这并不意味着您的合约没有部署成功，请打开MetaMask钱包，点击最新的交易记录来确认部署情况'
-        })
-      }
+    if (_timeOut !== null) {
+      MessageBox({
+        type: 'alert',
+        message: '请检查等待上次结果返回，勿频繁操作!'
+      })
+      console.warn('请检查等待上次结果返回，勿频繁操作!')
+      return
+    }
+    console.log('start  timeOut!!!')
+    _timeOut = setTimeout(() => {
+      MessageBox({
+        type: 'alert',
+        title: '超时',
+        message: '部署合约超时，但这并不意味着您的合约没有部署成功，请打开MetaMask钱包，点击最新的交易记录来确认部署情况'
+      })
+      _timeOut = null
     }, 5 * 60 * 1000)
     return new Promise(function (resolve, reject) {
       console.log(self.web3)
@@ -71,8 +84,10 @@ const Token = {
         }
         , function (err, contract) {
           if (err) {
+            clearTimeout(_timeOut)
+            console.log(_timeOut, 'clear time!!!')
+            _timeOut = null
             reject(err)
-            timeOut = false
             console.error(err)
           // callback fires twice, we only want the second call when the contract is deployed
           } else if (contract.address) {
@@ -81,7 +96,9 @@ const Token = {
               title: '合约创建完成',
               message: contract.address
             })
-            timeOut = false
+            clearTimeout(_timeOut)
+            console.log(_timeOut, 'clear time!!!')
+            _timeOut = null
             resolve(self.web3.version.network)
             console.log('address: ' + contract.address)
           }

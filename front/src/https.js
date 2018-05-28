@@ -5,7 +5,6 @@ let axiosIns = axios.create({})
 // 超时时间
 axiosIns.defaults.timeout = 5000
 axiosIns.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'
-// axios.defaults.baseURL = 'http://yuhuan-app.guahao-test.com:8080/app'
 axiosIns.defaults.baseURL = 'http://127.0.0.1:9000/app/'
 axiosIns.defaults.transformRequest = [function (data) {
   // 数据序列化
