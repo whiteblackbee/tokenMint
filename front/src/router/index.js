@@ -4,7 +4,8 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
-    {path: '/', component: r => require.ensure([], () => r(require('@/pages/index')), 'home')}
+    { path: '/', component: r => require.ensure([], () => r(require('@/pages/index')), 'home') }
   ]
 })

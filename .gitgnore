@@ -62,3 +62,8 @@ typings/
 
 # vuepress build output
 .vuepress/dist
+
+# myproject
+fornt/node_modules
+fornt/dist
+build

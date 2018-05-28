@@ -17,7 +17,7 @@
               <el-input v-model="form.initialSupply" placeholder="正整数，比特币发行总量为2100万枚"></el-input>
           </el-form-item>
           <el-form-item label="可分小数位数" prop="decimals">
-              <el-input v-model="form.decimals" placeholder="正整数，最大20位，一般使用18位"></el-input>
+              <el-input v-model="form.decimals" min="0" max="20" placeholder="正整数，最大20位，一般使用18位"></el-input>
           </el-form-item>
           <el-form-item label="">
             <el-checkbox label="开启自动发币功能（alpha版）" name="form.type" v-model="form.type"></el-checkbox>
