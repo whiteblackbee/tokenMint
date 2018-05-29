@@ -17,7 +17,7 @@
               <el-input v-model="form.initialSupply" placeholder="正整数，比特币发行总量为2100万枚"></el-input>
           </el-form-item>
           <el-form-item label="可分小数位数" prop="decimals">
-              <el-input v-model="form.decimals" min="0" max="20" placeholder="正整数，最大20位，一般使用18位"></el-input>
+              <el-input v-model="form.decimals" placeholder="正整数，最大20位，一般使用18位"></el-input>
           </el-form-item>
           <el-form-item label="">
             <el-checkbox label="开启自动发币功能（alpha版）" name="form.type" v-model="form.type"></el-checkbox>
@@ -54,6 +54,13 @@ import Token from '@/js/token'
 export default {
   name: 'home',
   data () {
+    var checkDecimals = (rule, value, callback) => {
+      if ((!value) || (/^[1-9]\d{0,1}$/.test(Number(value)) === false) || (Number(value) > 20)) {
+        return callback(new Error('请输入0~20的正整数'))
+      } else {
+        callback()
+      }
+    }
     return {
       notice: '请填写表单',
       btnDisabled: false,
@@ -80,9 +87,12 @@ export default {
           {pattern: /^[1-9]\d*$/, message: '正整数，比特币发行总量为2100万枚', trigger: 'blur'}
         ],
         decimals: [
-          {required: true, message: '请输入可分小数位数', trigger: 'blur'},
-          {pattern: /^[1-9]\d{0,19}$/, message: '正整数，最大20位，一般使用18位', trigger: 'blur'}
+          {validator: checkDecimals, trigger: 'blur'}
         ]
+        // decimals: [
+        //   {required: true, message: '请输入可分小数位数', trigger: 'blur'},
+        //   {pattern: /^[1-9]\d{0,19}$/, message: '正整数，最大20位，一般使用18位', trigger: 'blur'}
+        // ]
       }
     }
   },
